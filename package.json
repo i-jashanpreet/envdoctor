@@ -1,0 +1,43 @@
+{
+  "name": "envdoctor",
+  "version": "1.0.0",
+  "description": "Lightweight environment variable health checker for Node.js. Validates types, missing variables, URLs, and template consistency before your application boots.",
+  "main": "src/index.js",
+  "bin": {
+    "envdoctor": "bin/envdoctor"
+  },
+  "files": [
+    "bin",
+    "src",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "env",
+    "environment",
+    "env-checker",
+    "validation",
+    "validator",
+    "dotenv",
+    "health-check",
+    "config",
+    "configuration",
+    "cli",
+    "doctor",
+    "envdoctor",
+    "devops"
+  ],
+  "author": "Jashanpreet Singh",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
