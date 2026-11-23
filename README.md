@@ -1,61 +1,71 @@
-# EnvDoctor 🩺
+# 🩺 EnvDoctor
 
-> A lightweight, zero-dependency environment variable health checker for Node.js. Detect configuration errors, missing secrets, invalid URLs, and `.env.example` mismatches before your application starts.
+> A lightweight, zero-runtime-dependency environment variable health checker for Node.js.  
+> Detect missing configuration, invalid environment variables, exposed configuration mistakes, and `.env.example` mismatches before your application starts.
 
-[![npm version](https://img.shields.io/badge/npm-v1.0.0-blue.svg)](https://www.npmjs.com/package/envdoctor)
+[![npm version](https://img.shields.io/npm/v/@i_jashan/envdoctor.svg)](https://www.npmjs.com/package/@i_jashan/envdoctor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Tests](https://img.shields.io/badge/tests-58%20passing-brightgreen.svg)]()
+[![Tests](https://img.shields.io/badge/tests-58%20passed-brightgreen.svg)]()
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-success.svg)]()
-
----
-
-## 📌 Problem Statement
-
-In modern Node.js applications, missing or invalid environment variables are one of the most common causes of runtime crashes, silent misconfigurations, and broken deployments:
-
-- A typo in `DATABASE_URL` leads to unhandled database connection pool errors minutes after booting.
-- An empty `API_KEY` causes third-party payment requests to fail silently in production.
-- A missing `PORT` variable results in silent defaults or port conflict crashes.
-- Discrepancies between local `.env` and team-shared `.env.example` leave new developers debugging for hours.
-
-**EnvDoctor** solves this by auditing your environment before your application boots. It provides an intuitive programmatic API, a versatile CLI, zero runtime dependencies, and never exposes sensitive secrets in reports or logs.
-
----
-
-## ✨ Features
-
-- ⚡ **Zero Runtime Dependencies**: Ultra-fast, lightweight (<15 KB), secure against supply chain vulnerabilities.
-- 🔍 **Missing & Empty Detection**: Catches undefined, missing, and blank environment variables instantly.
-- 🛡️ **Zero Secret Leakage**: Guarantees sensitive values and API keys are never printed in console logs or error messages.
-- 📐 **Data Type Validation**: Validates `string`, `number`, `boolean`, `url`, `email`, and `port`.
-- 🎛️ **Custom Constraints**: Supports `min`, `max`, length limits, `choices` (enum), regex patterns, and custom validator functions.
-- 🔄 **.env.example Template Auditing**: Compares `.env` against `.env.example` to ensure team synchronization.
-- 💻 **Interactive CLI**: Run `npx envdoctor` anywhere with zero configuration needed.
-- 🎨 **Clear Visual Reports**: Beautiful, colorized terminal reports with clean column alignment.
-- 🧪 **CI/CD Ready**: Returns exit code `0` on success and `1` on failure for easy GitHub Actions / CI pipeline integration.
 
 ---
 
 ## 📦 Installation
 
-Install as a runtime dependency or dev dependency in your project:
+Install EnvDoctor in your Node.js project:
 
 ```bash
-# Using npm
-npm install envdoctor
-
-# Using yarn
-yarn add envdoctor
-
-# Using pnpm
-pnpm add envdoctor
+npm install @i_jashan/envdoctor
 ```
 
-Or run directly without installing via `npx`:
+Alternatively, use Yarn or pnpm:
 
 ```bash
-npx envdoctor
+yarn add @i_jashan/envdoctor
 ```
+
+```bash
+pnpm add @i_jashan/envdoctor
+```
+
+Run directly using NPX without manually installing it:
+
+```bash
+npx @i_jashan/envdoctor
+```
+
+**npm Package:** [@i_jashan/envdoctor](https://www.npmjs.com/package/@i_jashan/envdoctor)
+
+---
+
+## 📌 Problem Statement
+
+In modern Node.js applications, missing or invalid environment variables are common causes of runtime crashes, silent misconfigurations, and broken deployments.
+
+**Examples:**
+- A typo in `DATABASE_URL` leads to database connection errors.
+- An empty `API_KEY` causes third-party API requests to fail.
+- A missing `PORT` variable creates unexpected application behavior.
+- Differences between `.env` and `.env.example` leave new developers struggling with configuration.
+
+EnvDoctor solves these problems by auditing environment variables before an application starts.
+
+It provides a reusable JavaScript API, a command-line interface, zero runtime dependencies, and secure reports that never expose sensitive environment variable values.
+
+---
+
+## ✨ Features
+
+- ⚡ **Zero Runtime Dependencies**: Built using Node.js built-in modules.
+- 🔍 **Missing & Empty Detection**: Identifies undefined, missing, and blank variables.
+- 🔒 **Secret Protection**: Prevents sensitive environment values from appearing in reports.
+- 📐 **Data Type Validation**: Supports `string`, `number`, `boolean`, `url`, `email`, and `port`.
+- 🎛️ **Custom Constraints**: Supports minimum/maximum values, length limits, choices, regex patterns, and custom validators.
+- 🔄 **Template Auditing**: Compares `.env` against `.env.example`.
+- 💻 **CLI Support**: Run EnvDoctor directly from your terminal.
+- 🎨 **Terminal Reports**: Clear, colorized reports with readable status indicators.
+- 🧪 **CI/CD Ready**: Returns appropriate exit codes for automated pipelines.
+- 📦 **Lightweight**: Approximately 14.8 KB compressed package size.
 
 ---
 
@@ -63,10 +73,8 @@ npx envdoctor
 
 ### 1. Basic Variable Existence Check
 
-Ensure required keys exist before starting your server:
-
 ```javascript
-const { checkEnv } = require('envdoctor');
+const { checkEnv } = require('@i_jashan/envdoctor');
 
 const result = checkEnv({
   required: ['PORT', 'DATABASE_URL', 'API_KEY']
@@ -80,20 +88,19 @@ if (!result.valid) {
 console.log('Environment is healthy!');
 ```
 
-### 2. Auto-Throw on Error
+### 2. Automatically Throw Errors
 
-If you prefer failing fast on startup without boilerplate:
+Use `throwOnError` to stop execution when environment validation fails.
 
 ```javascript
-const { checkEnv } = require('envdoctor');
+const { checkEnv } = require('@i_jashan/envdoctor');
 
-// Throws an Error with formatted problem summaries if validation fails
 checkEnv({
   required: ['PORT', 'DATABASE_URL', 'JWT_SECRET'],
   throwOnError: true
 });
 
-// If execution reaches here, your environment is guaranteed to be valid
+console.log('Environment is valid!');
 ```
 
 ---
@@ -102,42 +109,45 @@ checkEnv({
 
 ### `checkEnv(config, [customEnv])`
 
-Validates an environment object against the provided configuration.
+Validates environment variables against a given configuration.
 
-#### Parameters:
+#### Parameters
 
-- **`config`** (`Object`):
-  - **`required`** (`string[]`): Array of required variable names.
-  - **`variables`** (`Record<string, Rule>`): Detailed schema for each variable.
-  - **`env`** (`Object`, default: `process.env`): Custom environment dictionary.
-  - **`allowEmpty`** (`boolean`, default: `false`): Whether empty strings are treated as valid.
-  - **`throwOnError`** (`boolean`, default: `false`): If `true`, throws an Error when invalid.
-- **`customEnv`** (`Object`, optional): Alternative way to provide custom environment variables.
+| Parameter | Description |
+| :--- | :--- |
+| `required` | Array of required variable names |
+| `variables` | Object containing detailed validation rules |
+| `env` | Custom environment object; defaults to `process.env` |
+| `allowEmpty` | Allows empty strings when enabled |
+| `throwOnError` | Throws an error when validation fails |
+| `customEnv` | Optional custom environment dictionary |
 
-#### Return Value:
+#### Example:
 
-Returns an object with the following shape:
+```javascript
+const { checkEnv } = require('@i_jashan/envdoctor');
+
+const result = checkEnv({
+  required: ['PORT', 'DATABASE_URL']
+});
+
+console.log(result);
+```
+
+#### Return Value
+
+Returns a validation result containing:
 
 ```javascript
 {
-  valid: true, // boolean
-  errors: [
-    {
-      variable: 'DATABASE_URL',
-      type: 'missing', // 'missing' | 'empty' | 'invalid_number' | 'invalid_url' | etc.
-      status: 'MISSING',
-      message: 'DATABASE_URL is required but missing'
-    }
-  ],
+  valid: true,
+  errors: [],
   warnings: [],
-  results: {
-    PORT: { valid: true, status: 'VALID', parsedValue: 3000 },
-    DATABASE_URL: { valid: false, status: 'MISSING', error: '...' }
-  },
+  results: {},
   summary: {
     total: 2,
-    passed: 1,
-    failed: 1,
+    passed: 2,
+    failed: 0,
     warnings: 0
   }
 }
@@ -147,59 +157,45 @@ Returns an object with the following shape:
 
 ## 🎛️ Schema & Validation Types
 
-EnvDoctor provides built-in type parsers and rule validators:
+EnvDoctor supports detailed validation rules for environment variables.
 
 ```javascript
-const { checkEnv, formatReport } = require('envdoctor');
+const { checkEnv } = require('@i_jashan/envdoctor');
 
 const result = checkEnv({
   variables: {
-    // Port validation with range boundaries
     PORT: {
       required: true,
       type: 'number',
       min: 1024,
       max: 65535
     },
-
-    // Validates URL format (supports http, https, postgres, mongodb, redis, etc.)
     DATABASE_URL: {
       required: true,
       type: 'url'
     },
-
-    // Validates email address format
     ADMIN_EMAIL: {
       required: true,
       type: 'email'
     },
-
-    // Allowed choice enum
     NODE_ENV: {
       required: true,
-      type: 'string',
       choices: ['development', 'test', 'staging', 'production']
     },
-
-    // Boolean (accepts true, false, 1, 0, yes, no)
     DEBUG: {
       required: false,
       type: 'boolean',
       default: false
     },
-
-    // Regex pattern matching
     API_KEY: {
       required: true,
       regex: /^sk_[a-zA-Z0-9]{24}$/
     },
-
-    // Custom validation logic
     SESSION_SECRET: {
       required: true,
       validate: (value) => {
         if (value.length < 32) {
-          return 'SESSION_SECRET must be at least 32 characters long for security';
+          return 'SESSION_SECRET must be at least 32 characters long';
         }
         return true;
       }
@@ -207,131 +203,136 @@ const result = checkEnv({
   }
 });
 
-// Print formatted terminal report
-console.log(formatReport(result));
+console.log(result);
 ```
 
-### Supported Data Types:
+### Supported Data Types
 
-| Type | Description | Accepted Values / Rules |
-| :--- | :--- | :--- |
-| `string` | UTF-8 String | Supports `minLength`, `maxLength`, `regex`, `pattern` |
-| `number` | Numeric value | Parses string to float/integer. Supports `min`, `max` |
-| `port` | Network port | Validates integer between `1` and `65535` |
-| `boolean` | Boolean flag | Case-insensitive: `'true'`, `'false'`, `'1'`, `'0'`, `'yes'`, `'no'` |
-| `url` | Web / Database URI | Valid URI structure with protocol (`https:`, `postgres:`, etc.) |
-| `email` | Email address | Valid RFC-compliant email string |
+| Type | Description |
+| :--- | :--- |
+| `string` | String validation with length and pattern constraints |
+| `number` | Numeric validation with minimum and maximum values |
+| `port` | Integer validation between 1 and 65535 |
+| `boolean` | Accepts `true`, `false`, `1`, `0`, `yes`, and `no` |
+| `url` | Validates web and database URLs |
+| `email` | Validates email address formatting |
+
+**Additional constraints:**
+- `min` and `max`
+- `minLength` and `maxLength`
+- `regex` and `pattern`
+- `choices` for allowed values
+- `validate` for custom validation functions
 
 ---
 
 ## 🖥️ CLI Usage
 
-EnvDoctor includes a command-line tool for auditing projects without writing code.
+EnvDoctor includes a command-line utility for checking environment configurations without writing JavaScript code.
 
-### Run with NPX:
-
-```bash
-npx envdoctor
-```
-
-### CLI Command Options:
-
-```text
-USAGE:
-  npx envdoctor [options]
-
-OPTIONS:
-  -e, --env <path>       Path to .env file (default: .env)
-  -t, --example <path>   Path to .env.example file (default: .env.example)
-  -c, --config <path>    Path to custom configuration file
-  --strict               Strict mode: fail if extra untracked variables exist
-  --no-color             Disable colored terminal output
-  -s, --silent           Suppress all output (returns exit code only)
-  -v, --version          Show version number
-  -h, --help             Show help documentation
-```
-
-### Examples:
+Run:
 
 ```bash
-# Check standard .env against .env.example
-npx envdoctor
-
-# Check specific environment files
-npx envdoctor --env .env.staging --example .env.example
-
-# Strict mode for CI/CD pipelines
-npx envdoctor --strict
+npx @i_jashan/envdoctor
 ```
 
-### Exit Codes:
+### Command Options
 
-- `0`: All variables are configured and valid.
-- `1`: One or more required variables are missing, empty, or invalid.
+| Option | Description |
+| :--- | :--- |
+| `-e, --env` | Path to the .env file |
+| `-t, --example` | Path to .env.example |
+| `-c, --config` | Path to custom configuration |
+| `--strict` | Fail if extra untracked variables exist |
+| `--no-color` | Disable colored output |
+| `-s, --silent` | Suppress terminal output |
+| `-v, --version` | Display package version |
+| `-h, --help` | Display help documentation |
+
+### Examples
+
+Check standard environment files:
+
+```bash
+npx @i_jashan/envdoctor
+```
+
+Check specific environment files:
+
+```bash
+npx @i_jashan/envdoctor --env .env.staging --example .env.template
+```
+
+Enable strict mode:
+
+```bash
+npx @i_jashan/envdoctor --strict
+```
+
+### Exit Codes
+
+| Code | Meaning |
+| :--- | :--- |
+| `0` | All environment variables are valid |
+| `1` | One or more configuration errors were detected |
+
+This makes EnvDoctor suitable for CI/CD pipelines and automated deployment checks.
 
 ---
 
 ## 📊 Terminal Reports
 
-### Successful Report:
+### Successful Validation
 
 ```text
-================================
-       ENVDOCTOR REPORT        
-================================
-
+================================ ENVDOCTOR REPORT ================================
 ✓ PORT              VALID
 ✓ DATABASE_URL      VALID
 ✓ API_KEY           VALID
 
 All environment variables are configured!
-
-================================
+==================================================================================
 ```
 
-### Failure Report:
+### Failed Validation
 
 ```text
-================================
-       ENVDOCTOR REPORT        
-================================
-
+================================ ENVDOCTOR REPORT ================================
 ✓ PORT              VALID
 ✗ DATABASE_URL      MISSING
 ✗ API_KEY           MISSING
 
-2 configuration issues found!
-
-Please check your .env file.
-================================
+2 configuration issues found! Please check your .env file.
+==================================================================================
 ```
 
 ---
 
-## 🔄 `.env.example` Comparison
+## 🔄 .env.example Comparison
 
-EnvDoctor can compare your active `.env` file directly with your team's `.env.example` template:
+EnvDoctor can compare your actual `.env` file against your team's `.env.example` template.
 
 ```javascript
-const { compareEnv } = require('envdoctor');
+const { compareEnv } = require('@i_jashan/envdoctor');
 
-// Compare disk files:
 const comparison = compareEnv({
   envPath: '.env',
   examplePath: '.env.example'
 });
 
 console.log('Missing in .env:', comparison.missing);
-console.log('Extra/Untracked:', comparison.extra);
-console.log('Empty in .env:', comparison.empty);
+console.log('Extra variables:', comparison.extra);
+console.log('Empty variables:', comparison.empty);
 console.log('Status:', comparison.valid ? 'OK' : 'MISMATCH');
 ```
+
+This helps developers maintain consistent environment configurations across development and production environments.
 
 ---
 
 ## 🧩 Optional Configuration File
 
-You can store your project's environment rules in an `envdoctor.config.js` file at the root of your project:
+You can define environment validation rules in an `envdoctor.config.js` file.
 
 ```javascript
 // envdoctor.config.js
@@ -340,21 +341,18 @@ module.exports = {
     PORT: { required: true, type: 'port', default: 3000 },
     DATABASE_URL: { required: true, type: 'url' },
     REDIS_HOST: { required: false, type: 'string' },
-    NODE_ENV: {
-      required: true,
-      choices: ['development', 'production', 'test']
-    }
+    NODE_ENV: { required: true, choices: ['development', 'production', 'test'] }
   }
 };
 ```
 
-When this file exists, simply running `npx envdoctor` automatically validates against it.
+When this configuration file is present, EnvDoctor can use it to validate your environment through the CLI.
 
 ---
 
 ## 🧪 Testing
 
-EnvDoctor is thoroughly covered with automated unit and integration tests.
+EnvDoctor includes automated unit and integration tests.
 
 Run the test suite:
 
@@ -362,35 +360,103 @@ Run the test suite:
 npm test
 ```
 
-Run tests with code coverage:
+Run tests with coverage:
 
 ```bash
 npm run test:coverage
 ```
 
+### Test Results
+
+| Metric | Result |
+| :--- | :--- |
+| Test Suites | 6 passed |
+| Total Tests | 58 passed |
+| Statement Coverage | 86.35% |
+| Runtime Dependencies | 0 |
+
 ---
 
 ## 🔒 Security Best Practices
 
-1. **Never commit `.env` files**: Ensure `.env` is listed in `.gitignore`.
-2. **Never expose secret values**: EnvDoctor masks and prevents values from appearing in reports, CLI outputs, or serialized error messages.
-3. **Commit `.env.example`**: Keep dummy template keys up to date so new contributors and CI runners know what to provide.
+- Never commit `.env` files to GitHub.
+- Keep `.env` inside `.gitignore`.
+- Never expose API keys, passwords, or database credentials.
+- Use `.env.example` with placeholder values.
+- Keep environment configurations synchronized across development and production.
+
+EnvDoctor is designed to avoid exposing actual environment variable values in its reports.
+
+---
+
+## 🏗️ Project Architecture
+
+```text
+envdoctor/
+│
+├── bin/
+│   └── envdoctor
+│
+├── src/
+│   ├── index.js
+│   ├── checker.js
+│   ├── validator.js
+│   ├── envParser.js
+│   ├── comparator.js
+│   ├── reporter.js
+│   └── cli.js
+│
+├── tests/
+│   ├── checker.test.js
+│   ├── validator.test.js
+│   ├── comparator.test.js
+│   ├── parser.test.js
+│   ├── reporter.test.js
+│   └── cli.test.js
+│
+├── examples/
+├── package.json
+├── README.md
+├── LICENSE
+└── .gitignore
+```
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are warmly welcome!
+Contributions are welcome!
 
 1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature/my-new-feature`.
-3. Commit your changes: `git commit -am 'Add new validation feature'`.
-4. Run tests: `npm test`.
-5. Push to the branch: `git push origin feature/my-new-feature`.
-6. Submit a Pull Request.
+2. Create a feature branch:
+   ```bash
+   git checkout -b feature/my-new-feature
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -m "feat: add new validation feature"
+   ```
+4. Run the tests:
+   ```bash
+   npm test
+   ```
+5. Push your branch and submit a Pull Request.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](./LICENSE).
+This project is licensed under the MIT License.  
+See the [LICENSE](./LICENSE) file for details.
+
+---
+
+## 📦 Links
+
+- **npm Package**: [@i_jashan/envdoctor](https://www.npmjs.com/package/@i_jashan/envdoctor)
+- **Installation**: `npm install @i_jashan/envdoctor`
+- **CLI**: `npx @i_jashan/envdoctor`
+
+---
+
+Built with Node.js ❤️ to make environment configuration safer and easier.

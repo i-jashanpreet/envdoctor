@@ -1,5 +1,5 @@
 {
-  "name": "envdoctor",
+  "name": "@i_jashan/envdoctor",
   "version": "1.0.0",
   "description": "Lightweight environment variable health checker for Node.js. Validates types, missing variables, URLs, and template consistency before your application boots.",
   "main": "src/index.js",
@@ -39,5 +39,8 @@
   },
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "@i_jashan/envdoctor": "^1.0.0"
   }
 }
